@@ -146,9 +146,15 @@ public class AuthenticationService {
         return new AuthenticationResponseBody(token, "Authentication succeeded.");
     }
 
+    // In your service/controller class
+    @Value("${FRONTEND_URL:http://localhost:5173}")
+    private String frontendUrl;
+
     public AuthenticationResponseBody googleLoginOrSignup(String code, String page) {
         String tokenEndpoint = "https://oauth2.googleapis.com/token";
-        String redirectUri = "http://localhost:5173/authentication/" + page;
+        // Use dynamic frontend URL
+        String redirectUri = frontendUrl + "/authentication/" + page;
+
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("code", code);
         body.add("client_id", googleClientId);
@@ -160,9 +166,8 @@ public class AuthenticationService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
-        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(tokenEndpoint, HttpMethod.POST, request,
-                new ParameterizedTypeReference<>() {
-                });
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                tokenEndpoint, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             Map<String, Object> responseBody = response.getBody();
@@ -189,6 +194,7 @@ public class AuthenticationService {
             throw new IllegalArgumentException("Failed to exchange code for ID token.");
         }
     }
+
 
     public AuthenticationResponseBody register(AuthenticationRequestBody registerRequestBody) {
         User user = userRepository.save(new User(
