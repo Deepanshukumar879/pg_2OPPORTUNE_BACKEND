@@ -22,6 +22,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
+        implementation("com.sendgrid:sendgrid-java:4.9.3")
+
+
+
+
 
     // Database
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
